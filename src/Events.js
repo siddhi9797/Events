@@ -43,30 +43,21 @@ export default Events;
 
 
 
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./events.css";
 
-// import all images
-import event1 from "../images/event1.jpg";
-import event2 from "../images/event2.jpg";
-
 function Events() {
-
   const [events, setEvents] = useState([]);
-
-  // map image names to actual imports
-  const imageMap = {
-    "event1.jpg": event1,
-    "event2.jpg": event2
-  };
 
   useEffect(() => {
     axios
       .get("https://sheetdb.io/api/v1/2tm8cjnqfsjj3")
       .then((response) => {
         setEvents(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
       });
   }, []);
 
@@ -78,18 +69,21 @@ function Events() {
         {events.map((event, index) => (
           <div className="event-card" key={index}>
 
-            {/* Show Image */}
+            {/* ✅ Show Image */}
             {event.image && (
               <img
-                src={imageMap[event.image] || event.image}
+                src={event.image}
                 alt="event"
                 className="event-image"
+                onError={(e) => {
+                  e.target.style.display = "none"; // hide if image fails
+                }}
               />
             )}
 
-            {/* Show other fields */}
+            {/* ✅ Show other fields */}
             {Object.keys(event).map((key) => {
-              if (key === "image") return null; // skip image field
+              if (key.toLowerCase() === "image") return null;
 
               return (
                 <p key={key}>
